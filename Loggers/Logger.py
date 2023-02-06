@@ -2,21 +2,104 @@ import os
 from typing import Any, Optional
 from datetime import datetime
 import pytz
-from robot.api import logger
-from elasticsearch import Elasticsearch
+import logging
+# from elasticsearch import Elasticsearch
 
 ROBOT_NAME = os.environ.get("ROBOT_NAME","roboname")
 CLIENT = os.environ.get("CLIENT","clientename")
-ELASTIC_ENV =  os.environ.get("ENVIRONMENT", "dev")
+# ELASTIC_ENV =  os.environ.get("ENVIRONMENT", "dev")
 #PUBLISH_TO_ELASTIC = os.environ.get("PUBLISH_TO_ELASTIC",True)
-PUBLISH_TO_ELASTIC = True
+# PUBLISH_TO_ELASTIC = True
 
 TIMEZONE = os.environ.get("TIMEZONE","America/Sao_Paulo")
-ELASTIC_HOST =  os.environ.get("ELASTICSEARCH_HOST", None)
-ELASTIC_USER =  os.environ.get("ELASTIC_USER", None)
-ELASTIC_PWD =  os.environ.get("ELASTIC_PWD", None)
+# ELASTIC_HOST =  os.environ.get("ELASTICSEARCH_HOST", None)
+# ELASTIC_USER =  os.environ.get("ELASTIC_USER", None)
+# ELASTIC_PWD =  os.environ.get("ELASTIC_PWD", None)
+OUTPUT_LOG = "Output/Logs"
 
-class Logger:
+output_log_format = f"%(asctime)s - [%(levelname)s] - %(message)s"
+
+class Logger():
+    
+    def __init__(self) -> None:
+        pass
+    
+    def log_debug(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.basicConfig(filename=self._filename(), level=logging.DEBUG, format=f"{output_log_format}")
+        msg = self._message(message, traceId=traceId, **kwargs)
+        logging.debug(msg)
+        
+    def log_info(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.basicConfig(filename=self._filename(), level=logging.INFO, format=f"{output_log_format}")
+        msg = self._message(message, traceId=traceId, **kwargs)
+        logging.info(msg)
+        
+    def log_warn(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.basicConfig(filename=self._filename(), level=logging.WARNING, format=f"{output_log_format}")
+        msg = self._message(message, traceId=traceId, **kwargs)
+        logging.warning(msg)
+        
+    def log_error(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.basicConfig(filename=self._filename(), level=logging.DEBUG, format=f"{output_log_format}")
+        msg = self._message(message, traceId=traceId, **kwargs)
+        logging.error(msg)
+        
+    def log_critical(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.basicConfig(filename=self._filename(), level=logging.CRITICAL, format=f"{output_log_format}")
+        msg = self._message(message, traceId=traceId, **kwargs)
+        logging.critical(msg)
+    
+    def __add_kwargs_in_log(self, kwargs, args = "") -> str:
+        count = 0
+        for key, value in kwargs.items():
+            count += 1
+            if len(kwargs.items()) > 1:
+                if count < len(kwargs.items()):
+                    args += f"{key}={value} | "
+                else:
+                    args += f"{key}={value}"
+            else:
+                args += f"{key}={value}"
+        return args
+        
+    def _message(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        msg = message
+        if traceId:
+            msg = f"ID: {traceId} | {message}"
+        
+        args = self.__add_kwargs_in_log(kwargs)
+        if args == "":
+            msg = args if message == '' else f'{msg}'
+        else:
+            msg = args if message == '' else f'{msg} | {args}'
+        return msg
+
+    def _create_file_log(self, datetime_now, log_per_day: bool = False) -> str:
+        if log_per_day:
+            # cria um arquivo de log por dia
+            return f"{OUTPUT_LOG}/{datetime_now.strftime('%Y-%m-%d')}.log"
+        else:
+            # cria um arquivo de log por mensagem de log
+            return f"{OUTPUT_LOG}/{datetime_now.strftime('%Y-%m-%d_%H-%M-%S-%f')}.log"
+        
+    def __verify_file_extension(self, filename: str) -> bool:
+        if '.txt' in filename[-4:]:
+            return f"{OUTPUT_LOG}/{filename}"                
+        if '.log' in filename[-4:]:
+            return f"{OUTPUT_LOG}/{filename}"
+        if not '.log' in filename[-4:] or not '.txt' in filename[-4:]:
+            return f"{OUTPUT_LOG}/{filename}.log"
+        else:
+            return f"{OUTPUT_LOG}/{filename}.txt"
+           
+    def _filename(self, filename: str = None, log_per_day: bool = True) -> str:
+        if filename == None:
+            return self._create_file_log(datetime.now(), log_per_day)
+        else:
+            return self.__verify_file_extension(filename)
+            
+
+class __OLD_Logger:
 
     ROBOT_LISTENER_API_VERSION = 2
 
@@ -27,7 +110,7 @@ class Logger:
         self.ROBOT_NAME = ROBOT_NAME
 
         #if self.PUBLISH_TO_ELASTIC:
-        self.el = Elastic(client=self.CLIENT, robot_name=self.ROBOT_NAME)
+        # self.el = Elastic(client=self.CLIENT, robot_name=self.ROBOT_NAME)
 
     def log_info(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
         msg = self._message(message, traceId=traceId, **kwargs)
@@ -37,22 +120,22 @@ class Logger:
         logger.info(msg, html=True, also_console=also_console)
         if 'level' not in kwargs:
             kwargs['level'] = 'INFO'
-        self.el.publish(msg, traceId=traceId, **kwargs)
+        # self.el.publish(msg, traceId=traceId, **kwargs)
 
     def log_warn(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
         msg = self._message(message, traceId=traceId, **kwargs)
         logger.warn(msg, html=True)
-        self.el.publish(msg, traceId=traceId, level="WARN", **kwargs)
+        # self.el.publish(msg, traceId=traceId, level="WARN", **kwargs)
 
     def log_debug(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
         msg = self._message(message, traceId=traceId, **kwargs)
         logger.debug(msg, html=True)
-        self.el.publish(msg, traceId=traceId, level="DEBUG", **kwargs)
+        # self.el.publish(msg, traceId=traceId, level="DEBUG", **kwargs)
 
     def log_error(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
         msg = self._message(message, traceId=traceId, **kwargs)
         logger.error(msg, html=True)
-        self.el.publish(msg, traceId=traceId, level="ERROR", **kwargs)
+        # self.el.publish(msg, traceId=traceId, level="ERROR", **kwargs)
 
     def _message(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
         msg = message
@@ -150,7 +233,7 @@ class Logger:
         self.log_info(**info)
 
 
-class Elastic:
+class __Elastic:
     tz = pytz.timezone(TIMEZONE)
 
     def __init__(self, client: str, robot_name: str) -> None:
