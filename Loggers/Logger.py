@@ -24,31 +24,6 @@ class Logger():
     def __init__(self) -> None:
         pass
     
-    def log_debug(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        logging.basicConfig(filename=self._filename(), level=logging.DEBUG, format=f"{output_log_format}")
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logging.debug(msg)
-        
-    def log_info(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        logging.basicConfig(filename=self._filename(), level=logging.INFO, format=f"{output_log_format}")
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logging.info(msg)
-        
-    def log_warn(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        logging.basicConfig(filename=self._filename(), level=logging.WARNING, format=f"{output_log_format}")
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logging.warning(msg)
-        
-    def log_error(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        logging.basicConfig(filename=self._filename(), level=logging.DEBUG, format=f"{output_log_format}")
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logging.error(msg)
-        
-    def log_critical(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        logging.basicConfig(filename=self._filename(), level=logging.CRITICAL, format=f"{output_log_format}")
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logging.critical(msg)
-    
     def __add_kwargs_in_log(self, kwargs, args = "") -> str:
         count = 0
         for key, value in kwargs.items():
@@ -97,8 +72,34 @@ class Logger():
             return self._create_file_log(datetime.now(), log_per_day)
         else:
             return self.__verify_file_extension(filename)
+    
+    def __log(self, 
+              level, 
+              message: str = '', 
+              traceId: Optional[str] = None, 
+              log_format: str = output_log_format,
+              log_per_day: bool = True,  
+              **kwargs: Any) -> None:
+        logging.basicConfig(filename=self._filename(log_per_day=log_per_day), level=level, format=f"{log_format}")
+        msg = self._message(message, traceId=traceId, **kwargs)
+        return msg
+    
+    def log_debug(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.debug(self.__log(level=logging.DEBUG, message=message, traceId=traceId, **kwargs))
+        
+    def log_info(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.info(self.__log(level=logging.INFO, message=message, traceId=traceId, **kwargs))
+        
+    def log_warn(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.warning(self.__log(level=logging.WARNING, message=message, traceId=traceId, **kwargs))
+        
+    def log_error(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.error(self.__log(level=logging.ERROR, message=message, traceId=traceId, **kwargs))
+        
+    def log_critical(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
+        logging.critical(self.__log(level=logging.CRITICAL, message=message, traceId=traceId, **kwargs))
             
-
+            
 class __OLD_Logger:
 
     ROBOT_LISTENER_API_VERSION = 2
@@ -111,46 +112,6 @@ class __OLD_Logger:
 
         #if self.PUBLISH_TO_ELASTIC:
         # self.el = Elastic(client=self.CLIENT, robot_name=self.ROBOT_NAME)
-
-    def log_info(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        msg = self._message(message, traceId=traceId, **kwargs)
-        also_console = True
-        if 'console' in kwargs:
-            also_console = kwargs['console']
-        logger.info(msg, html=True, also_console=also_console)
-        if 'level' not in kwargs:
-            kwargs['level'] = 'INFO'
-        # self.el.publish(msg, traceId=traceId, **kwargs)
-
-    def log_warn(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logger.warn(msg, html=True)
-        # self.el.publish(msg, traceId=traceId, level="WARN", **kwargs)
-
-    def log_debug(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logger.debug(msg, html=True)
-        # self.el.publish(msg, traceId=traceId, level="DEBUG", **kwargs)
-
-    def log_error(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        msg = self._message(message, traceId=traceId, **kwargs)
-        logger.error(msg, html=True)
-        # self.el.publish(msg, traceId=traceId, level="ERROR", **kwargs)
-
-    def _message(self, message: str = '', traceId: Optional[str] = None, **kwargs: Any):
-        msg = message
-        args = ""
-        if traceId:
-            msg = f"ID: {traceId} | {message}"
-        for key, value in kwargs.items():
-            args += f" {key}={value}"
-        # TODO achar de onde ta vindo o dicinário na 'message'
-        #try:
-        #    msg = args if message.strip() == '' else f'{msg} | {args}'
-        #except:
-        #    msg = args if message == '' else f'{msg} | {args}'
-        msg = args if message == '' else f'{msg} | {args}'
-        return msg
 
     def start_suite(self, name: str, attributes: dict):
         """Listener Function"""
@@ -174,7 +135,6 @@ class __OLD_Logger:
             trigger_type='start_task'
         )
         self.log_info(**info)
-
 
     def start_keyword(self, name: str, attributes: dict):
         """Listener Function"""
