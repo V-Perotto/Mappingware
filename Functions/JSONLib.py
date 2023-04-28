@@ -96,4 +96,4 @@ class JSONLib():
                 json.dump(json_list, json_file, indent=4, separators=(',',': '))
         
         except Exception:
-            raise Exception("Error to create, save, or modify json file.")
+            return Exception("Error to create, save, or modify json file.")
