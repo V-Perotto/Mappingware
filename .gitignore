@@ -1,6 +1,6 @@
 __pycache__/
 *.log
-*.txt
 Tests/
 Maintenance/
 venv/
+env/
