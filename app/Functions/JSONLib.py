@@ -2,7 +2,7 @@ import os
 import json
 import traceback
 from datetime import datetime
-from Loggers.app_logger import ROOT
+from Settings.config import ROOT
 from Loggers.Logger import Logger
 
 OUTPUT_JSON = r"Output/Json" 
