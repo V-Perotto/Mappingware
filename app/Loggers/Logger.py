@@ -2,8 +2,8 @@ import os
 from typing import Any, Optional
 from datetime import datetime
 import logging
+from Settings.config import OUTPUT_LOG
 
-OUTPUT_LOG = "Output/Logs"
 output_log_format = f"%(asctime)s - [%(levelname)s] - %(message)s"
 
 class Logger():
