@@ -4,7 +4,7 @@ from Loggers.Logger import Logger
 
 logger = Logger("Mouse")
 
-class MouseLogger(Logger):
+class MouseLogger():
     
     def __init__(self) -> None:
         self.clicks = []
@@ -34,6 +34,4 @@ class MouseLogger(Logger):
 
     def mouse_listener(self) -> None:
         with Listener(on_move=self.on_move, on_click=self.on_click, on_scroll=self.on_scroll) as listener:
-            lister = listener.join()
-            logger.debug(lister)
-        listener.stop()
+            listener.join()

