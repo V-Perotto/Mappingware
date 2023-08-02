@@ -15,20 +15,22 @@ class Main():
         except:
             return False
 
-    def run(self):
-        multiprocessing.freeze_support()
-        # keylog = KeyLogger()
-        # mouselog = MouseLogger()
-        observer = Observer()
-        logger = Logger("")
-        
+    def __run_with_admin(self, observer, logger):
         if self.__is_admin():
             try:
-                # keylog.keyboard_listener()
-                # mouselog.mouse_listener()
                 observer.activate_listeners()
             except:
                 logger.error(traceback.format_exc()) 
         else:
             # Re-run the program with admin rights
             ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+        
+    def run(self, use_admin=False):
+        observer = Observer()
+        logger = Logger("")
+        
+        if use_admin:
+            self.__run_with_admin(observer, logger)
+        else:
+            observer.activate_listeners() 
+        
