@@ -1,6 +1,6 @@
 __pycache__/
 *.log
-*.txt
-*.drawio
 Tests/
 Maintenance/
+venv/
+env/

