@@ -1,9 +1,11 @@
 import multiprocessing
 from Loggers.KeyLogger import KeyLogger
 from Loggers.MouseLogger import MouseLogger
+from Loggers.Observer import Observer
 from Loggers.Logger import Logger
 import ctypes, sys
 import traceback
+
 
 class Main():
     
@@ -15,14 +17,16 @@ class Main():
 
     def run(self):
         multiprocessing.freeze_support()
-        keylog = KeyLogger()
-        mouselog = MouseLogger()
+        # keylog = KeyLogger()
+        # mouselog = MouseLogger()
+        observer = Observer()
         logger = Logger("")
         
         if self.__is_admin():
             try:
                 # keylog.keyboard_listener()
-                mouselog.mouse_listener()
+                # mouselog.mouse_listener()
+                observer.activate_listeners()
             except:
                 logger.error(traceback.format_exc()) 
         else:
