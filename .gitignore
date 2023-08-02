@@ -4,3 +4,4 @@ Tests/
 Maintenance/
 venv/
 env/
+.vscode/
