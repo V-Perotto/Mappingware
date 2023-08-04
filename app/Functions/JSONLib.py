@@ -1,25 +1,25 @@
-import os
-import json
-import traceback
+from os import path
+from json import load, dump
+from traceback import format_exc
 from datetime import datetime
-from Settings.config import ROOT
+from Settings.config import OUTPUT_JSON
 from Loggers.Logger import Logger
 
-OUTPUT_JSON = r"Output/Json" 
+json_log = Logger("Json")
 
-class JSONLib():
+class JSONLib:
 
     def __init__(self) -> None:
         self.input_path = OUTPUT_JSON
         self.output_path = OUTPUT_JSON
         
-    def _create_file_json(self, datetime_now, log_per_day: bool = True) -> str:
+    def _create_file_json(self, log_per_day: bool = True) -> str:
         if log_per_day:
             # cria um arquivo de log por dia
-            return f"{datetime_now.strftime('%Y-%m-%d')}.json"
+            return f"{datetime.now().strftime('%Y-%m-%d')}.json"
         else:
             # cria um arquivo de log por mensagem de log
-            return f"{datetime_now.strftime('%Y-%m-%d_%H-%M-%S-%f')}.json"
+            return f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}.json"
         
     def __validate_json_name(self, filename: str) -> str:
         if not '.json' in filename[-5:]:
@@ -33,8 +33,8 @@ class JSONLib():
         if json_file_path is None:
             json_file_path = self.input_path
         try:
-            with open(os.path.join(json_file_path, self.__validate_json_name(filename)), "r") as openfile:
-                json_obj = json.load(openfile)
+            with open(path.join(json_file_path, self.__validate_json_name(filename)), "r") as openfile:
+                json_obj = load(openfile)
             return json_obj
         except Exception as e:
             raise e     # f'Error to read a JSON file. \n{e}' 
@@ -46,11 +46,11 @@ class JSONLib():
         if json_file_path is None:
             json_file_path = self.output_path
         try:
-            with open(os.path.join(json_file_path, self.__validate_json_name(filename)), "a") as outfile:
-                json.dump(dict_package, outfile)       
+            with open(path.join(json_file_path, self.__validate_json_name(filename)), "a") as outfile:
+                dump(dict_package, outfile)       
             return True
         except:       
-            raise Exception(f'Error to write a JSON file.\n{traceback.format_exc()}')
+            raise Exception(f'Error to write a JSON file.\n{format_exc()}')
         
     def read_json(self, filename: str = None, json_file_path: str = None) -> None:
         if filename is None and json_file_path is None:
@@ -66,26 +66,17 @@ class JSONLib():
             
     def save_text_data(self, text: str, cmd_pressed: str) -> None:        
         try:
-            logger = Logger()
-            
-            FULL_PATH = os.path.join(ROOT, OUTPUT_JSON)
-            
-            filename = os.path.join(FULL_PATH, 
-                                    self.__validate_json_name(
-                                        self._create_file_json(
-                                            datetime.now(), 
-                                            OUTPUT_JSON)
-                                        )
-                                    )
+            # logger = Logger()
+            filename = path.join(OUTPUT_JSON, self.__validate_json_name(self._create_file_json()))
             json_list = []
             
-            if os.path.isfile(filename) is False:
+            if path.isfile(filename) is False:
                 file_json = open(filename)
                 file_json.close()
             
             # Read JSON file
             with open(filename, 'r') as fp:
-                json_list = json.load(fp)
+                json_list = load(fp)
             
             json_list.append({
                 "text": text,
@@ -93,7 +84,7 @@ class JSONLib():
             })
             
             with open(filename, 'w') as json_file:
-                json.dump(json_list, json_file, indent=4, separators=(',',': '))
+                dump(json_list, json_file, indent=4, separators=(',',': '))
         
         except Exception:
             return Exception("Error to create, save, or modify json file.")
