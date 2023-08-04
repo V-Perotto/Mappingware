@@ -5,3 +5,6 @@ Maintenance/
 venv/
 env/
 .vscode/
+app/Output/Logs/*.txt
+app/Output/Logs/Mouse/*.txt
+app/Output/Logs/Keyboard/*.txt
