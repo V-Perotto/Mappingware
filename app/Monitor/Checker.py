@@ -1,7 +1,7 @@
-﻿import time
-import os
-import json
-import win32com.client
+﻿from time import sleep
+from os import getcwd, startfile, path
+from json import load
+from win32com.client import Dispatch
 
 from Monitor.MicrosoftTeams import MicrosoftTeams
 from Monitor.Message import Message
@@ -64,7 +64,7 @@ class Checker():
                 MicrosoftTeams().sendMessage(m)
                 print(f'Service \'{name}\' unavailable!!!')
                 print("Iniciando serviço")
-                os.startfile('"C:\Program Files\Google\Drive File Stream\launch.bat"')
+                startfile('"C:\Program Files\Google\Drive File Stream\launch.bat"')
                 return m
         else:
             is_listening = is_running = True
@@ -92,8 +92,8 @@ class Checker():
                 bool: True/False
         """
         try:
-            english_path_exists = os.path.exists(r"G:\My Drive")
-            portuguese_path_exists = os.path.exists(r"G:\Meu Drive")
+            english_path_exists = path.exists(r"G:\My Drive")
+            portuguese_path_exists = path.exists(r"G:\Meu Drive")
             if not portuguese_path_exists and not english_path_exists:
                 return False
             if not portuguese_path_exists or not english_path_exists:
@@ -127,12 +127,12 @@ class Checker():
             :return: retorna True se o carregamento (leitura do arquivo) teve êxito ou False caso contrário.
             :rtype: bool
         """
-        home = os.getcwd()
+        home = getcwd()
         try: 
             print('Carregando o arquivo de configuração!')
             global ms_teams_webhook, bot_id, chat_id, cpu_percent_threshold, ram_percent_threshold, disk_percent_threshold
             with open(rf"{home}/config.json") as json_file:
-                data = json.load(json_file)
+                data = load(json_file)
                 for config in data['config']:
                     ms_teams_webhook = config['ms_teams_webhook']
                     bot_id = config['bot_id']
@@ -158,7 +158,7 @@ class Checker():
             self.check_service('Vault','127.0.0.1','8200')
             self.check_service('ElasticSearch','127.0.0.1','9200')
             self.check_service('Kibana','127.0.0.1','5601')
-            time.sleep(30)
+            sleep(30)
             print('')
 
     def run_disk_cleaner_script(self):
@@ -168,7 +168,7 @@ class Checker():
         try:
             print("executando limpeza no disco")
             task_name = 'log-rotate'
-            scheduler = win32com.client.Dispatch('Schedule.Service')
+            scheduler = Dispatch('Schedule.Service')
             scheduler.Connect()
             rootFolder = scheduler.GetFolder('\\RPA_TOOLS')
             task = rootFolder.GetTask(task_name)

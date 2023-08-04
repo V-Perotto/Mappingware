@@ -1,14 +1,14 @@
-import psutil
-import os
+from psutil import cpu_times_percent, virtual_memory, disk_usage
+from os import environ, popen
 
 class Machine():
     """
         Classe que contem os métodos relacionados aos recursos da máquina.
     """
     def __init__(self):
-        self.raw_cpu_usage = psutil.cpu_times_percent(interval=0.4, percpu=False)
-        self.raw_memory = psutil.virtual_memory()
-        self.raw_disk_usage = psutil.disk_usage(".")
+        self.raw_cpu_usage = cpu_times_percent(interval=0.4, percpu=False)
+        self.raw_memory = virtual_memory()
+        self.raw_disk_usage = disk_usage(".")
         self.user_unlock()
 
     def return_hostname(self):
@@ -18,7 +18,7 @@ class Machine():
             :return: retorna o nome da máquina
             :rtype: string
         """
-        return os.environ['COMPUTERNAME']
+        return environ['COMPUTERNAME']
 
     def return_cpu_usage(self):
         """
@@ -70,7 +70,7 @@ class Machine():
             Função para desbloquear usuário de dev no servidor
         """
         try:        
-            stream = os.popen('Net user usr_dev /ACTIVE:YES')
+            stream = popen('Net user usr_dev /ACTIVE:YES')
             stream.read()
         except Exception as e:
             print(f"Erro ao desbloquear usuario: {e}")
