@@ -7,8 +7,9 @@ from Loggers.Logger import Logger
 class Stacker():
     
     def __init__(self, output):
-        self.output = os.path.join(OUTPUT_LOG, output)
-        self.logger = Logger("Stacker_{output}")
+        stacker_output = "Stacker_{output}"
+        self.output = os.path.join(OUTPUT_LOG, stacker_output.format(output=output))
+        self.logger = Logger(stacker_output)
     
     def __default_filename(self, filename=None) -> str:
         if filename is None:
