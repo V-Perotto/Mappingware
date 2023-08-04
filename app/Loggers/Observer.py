@@ -4,15 +4,16 @@ from threading import Thread
 from Loggers.KeyLogger import KeyLogger
 from Loggers.MouseLogger import MouseLogger
 
-class Observer():
+
+class Observer:
     
     def activate_listeners(self):        
-        thread_mouse = Thread(target=MouseLogger().mouse_listener)
-        thread_key = Thread(target=KeyLogger().keyboard_listener)
+        mouse = Thread(target=MouseLogger().mouse_listener)
+        key = Thread(target=KeyLogger().keyboard_listener)
         
-        thread_mouse.start()
-        thread_key.start()
+        mouse.start()
+        key.start()
         
-        thread_mouse.join()
-        thread_key.join()
+        mouse.join()
+        key.join()
         
