@@ -1,15 +1,12 @@
-import os
+from os import path
 from datetime import datetime
 from Settings.config import OUTPUT_LOG
-from Loggers.Logger import Logger
 
 
-class Stacker():
+class Stacker:
     
-    def __init__(self, output):
-        stacker_output = "Stacker_{output}"
-        self.output = os.path.join(OUTPUT_LOG, stacker_output.format(output=output))
-        self.logger = Logger(stacker_output)
+    def __init__(self):
+        self.output = path.join(OUTPUT_LOG, "Stacker")
     
     def __default_filename(self, filename=None) -> str:
         if filename is None:
@@ -19,8 +16,7 @@ class Stacker():
     def store_string_to_txt(self, data, filename=None):
         try:
             filename = self.__default_filename(filename)
-            with open(filename, 'w') as file:
+            with open(filename, 'a') as file:
                 file.write(data)
-            self.logger.info(message="Data has been successfully stored.", kwargs=dict(path=filename))
         except IOError:
-            self.logger.error(message="Unable to write", kwargs=dict(path=filename))
+            raise IOError
