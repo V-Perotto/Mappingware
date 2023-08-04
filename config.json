@@ -1,0 +1,34 @@
+{
+    "config": [
+        {
+            "ms_teams_webhook":"https://id_do_webhook_do_teams",
+            "bot_id": "id:do_bot", 
+            "chat_id": "id_do_chat",
+            "cpu_percent_threshold": 90,
+            "ram_percent_threshold": 90,
+            "disk_percent_threshold": 90
+        }
+    ],
+    "init_service_config": {
+        "MongoDB": {
+            "type_init":"windows_services",
+            "name_service":"MongoDB"
+        },
+        "Vault": {
+            "type_init":"windows_task_scheduler",
+            "folder":"\\RPA_TOOLS",
+            "name_task":"Vault"
+        },
+        "ElasticSearch": {
+            "type_init":"windows_task_scheduler",
+            "folder":"\\RPA_TOOLS",
+            "name_task":"Elastic"
+
+        },
+        "Kibana": {
+            "type_init":"windows_task_scheduler",
+            "folder":"\\RPA_TOOLS",
+            "name_task":"Kibana"
+        }
+    }
+}
