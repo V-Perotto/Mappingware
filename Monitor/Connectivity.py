@@ -1,5 +1,5 @@
-import os
-import socket
+from os import system
+from socket import socket, AF_INET, SOCK_STREAM
 
 class Connectivity():
     """
@@ -17,7 +17,7 @@ class Connectivity():
         :rtype: bool
         """
         try:
-            a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            a_socket = socket(AF_INET, SOCK_STREAM)
             location = (self.host, int(self.port))
             result_of_check = a_socket.connect_ex(location)
             if result_of_check == 0:
@@ -34,7 +34,7 @@ class Connectivity():
         :return: retorna True se o host está respondendo aos pings (echo reply) ou False caso contrário.
         :rtype: bool
         """
-        response = os.system("ping -n 1 " + self.host + " -w 500")
+        response = system("ping -n 1 " + self.host + " -w 500")
         if response == 0:
             return True
         else:

@@ -1,8 +1,8 @@
-import os
-import psutil
-import json
-import win32com.client
-import win32serviceutil
+from os import getcwd
+from psutil import win_service_get, NoSuchProcess
+from json import loads
+from win32com.client import Dispatch
+from win32serviceutil import StartService
 
 class Services():
     """
@@ -10,7 +10,7 @@ class Services():
     """
     def __init__(self, name):
         self.name = name
-        self.home_path = os.getcwd()
+        self.home_path = getcwd()
         self.path_config = rf"{self.home_path}\config.json"
 
     def find_win_service(self):
@@ -20,8 +20,8 @@ class Services():
         :rtype: bool
         """
         try:
-            return psutil.win_service_get(self.name)
-        except psutil.NoSuchProcess as e:
+            return win_service_get(self.name)
+        except NoSuchProcess as e:
             print(f"Service {self.name} not found!")
             return False
 
@@ -46,7 +46,7 @@ class Services():
         Função que dispara a task do serviço que não está ativo
         """
         print("carregando configurações")
-        self.config_init_services = json.loads(open(self.path_config,"r").read())["init_service_config"]
+        self.config_init_services = loads(open(self.path_config,"r").read())["init_service_config"]
         if name not in self.config_init_services.keys():
             print("Serviço Externo ou não configurado em -> config.json")
             return False
@@ -56,7 +56,7 @@ class Services():
         if config["type_init"] == "windows_task_scheduler":
             try:
                 print(f"Iniciando {name}")
-                scheduler = win32com.client.Dispatch('Schedule.Service')
+                scheduler = Dispatch('Schedule.Service')
                 scheduler.Connect()
                 rootFolder = scheduler.GetFolder(config["folder"])
                 task = rootFolder.GetTask(config["name_task"])
@@ -72,7 +72,7 @@ class Services():
             print("iniciando serviço")
             name_service = config["name_service"]
             try: 
-                win32serviceutil.StartService(name_service)
+                StartService(name_service)
             except Exception as e:
                 print(f"Erro ao tentar iniciar o serviço do {name}")
                 print(e)

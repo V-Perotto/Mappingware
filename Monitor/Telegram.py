@@ -1,4 +1,4 @@
-import requests as request
+from requests import get
 
 class Telegram():
     """
@@ -20,7 +20,7 @@ class Telegram():
         try:
             url_request = self.endpoint + self.bot_id+'/'+ method + \
             '?chat_id=' + self.chat_id + '&text=' + self.message + '&parse_mode=HTML'
-            response = request.get(url_request)
+            response = get(url_request)
             return True, response
         except:
             return False

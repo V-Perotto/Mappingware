@@ -4,3 +4,8 @@ Tests/
 Maintenance/
 venv/
 env/
+.vscode/
+app/Output/Logs/*.txt
+app/Output/Logs/Json/*.json
+app/Output/Logs/Keyboard_Mouse/*.txt
+app/Output/Logs/Stacker/*.txt
